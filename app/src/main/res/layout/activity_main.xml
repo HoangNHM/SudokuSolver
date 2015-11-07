@@ -1,0 +1,87 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/fram_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <GridView
+            android:id="@+id/gridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="9"
+            android:verticalSpacing="0dp"
+            android:stretchMode="columnWidth"
+            android:layout_centerInParent="true"
+            android:background="@drawable/grid"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:columnCount="4"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn1"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/btn2"
+                android:text="2" />
+
+            <Button
+                android:id="@+id/btn3"
+                android:text="3" />
+
+            <Button
+                android:id="@+id/btn0"
+                android:text="Del"/>
+
+            <Button
+                android:id="@+id/btn4"
+                android:text="4" />
+
+            <Button
+                android:id="@+id/btn5"
+                android:text="5" />
+
+            <Button
+                android:id="@+id/btn6"
+                android:text="6" />
+
+            <Button
+                android:text="Clr"
+                android:onClick="Clear"/>
+
+            <Button
+                android:id="@+id/btn7"
+                android:text="7"/>
+
+            <Button
+                android:id="@+id/btn8"
+                android:text="8" />
+
+            <Button
+                android:id="@+id/btn9"
+                android:text="9" />
+
+            <Button
+                android:text="Sol"
+                android:onClick="Solve"/>
+
+        </GridLayout>
+    </RelativeLayout>
+
+
+</LinearLayout>
