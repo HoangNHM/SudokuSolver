@@ -1,7 +1,6 @@
 package com.hoangnhm.sodukusolver;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,7 @@ public class SudokuAdapter extends BaseAdapter {
 
     public void setSudoku(int[][] sudoku) {
         this.sudoku = sudoku;
-        Log.d("noticee", "done");
+        notifyDataSetChanged();
     }
 
     @Override
@@ -68,16 +67,15 @@ public class SudokuAdapter extends BaseAdapter {
         int x = index / 9;
         int y = index % 9;
         S[x][y] = num;
-        notifyDataSetChanged();
     }
 
-    public void clear() {
+    public void clear(int[][] S) {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                sudoku[i][j] = 0;
+                S[i][j] = 0;
             }
         }
-        notifyDataSetChanged();
+        this.setSudoku(S);
     }
 
 //    public static class Solver {
