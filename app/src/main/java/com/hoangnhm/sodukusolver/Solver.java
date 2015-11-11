@@ -1,5 +1,7 @@
 package com.hoangnhm.sodukusolver;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 
 public class Solver {
 
+    private static final String TAG = "S_DEBUG";
     private ArrayList<int[][]> solutions = new ArrayList<>();
     int countSolution = 0;
 
@@ -23,9 +26,7 @@ public class Solver {
         int[][] newSolution = new int[9][9];
         //System.arraycopy(solution, 0, newSolution, 0, newSolution.length);
         for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                newSolution[i][j] = solution[i][j];
-            }
+            System.arraycopy(solution[i], 0, newSolution[i], 0, 9);
         }
         this.solutions.add(newSolution);
         countSolution++;
@@ -65,44 +66,47 @@ public class Solver {
     public boolean isValid(int value, int index, int[][] S) {
         int row = index / 9;
         int col = index % 9;
-        return (isValidRow(value, col, S) && (isValidColumn(value, row, S)) && (isValidZone(value, row, col, S)));
+        return isValidRow(value, col, S) && isValidColumn(value, row, S) && isValidZone(value, row, col, S);
     }
 
     public boolean isValid(int value, int row, int col, int[][] S) {
-        return (isValidRow(value, col, S) && (isValidColumn(value, row, S)) && (isValidZone(value, row, col, S)));
+        return isValidRow(value, col, S) && isValidColumn(value, row, S) && isValidZone(value, row, col, S);
     }
 
-    public boolean nextEmpty(int[] row, int[] col, int[][] S) {
-        for (row[0] = 0; row[0] < 9; row[0]++) {
-            for (col[0] = 0; col[0] < 9; col[0]++) {
-                if (0 == S[row[0]][col[0]]) {
-                    return true;
+    public int nextEmpty(int[][] S) {
+        for (int row = 0; row < 9; row += 1) {
+            for (int col = 0; col < 9; col += 1) {
+                if (0 == S[row][col]) {
+//                    Log.d(TAG, "row: " + row[0] + " ,col: " + col[0]);
+                    return (row * 9) + col;
                 }
             }
         }
-        return false;
+        return 100;
     }
 
     public boolean solved(int[][] S) {
-        int[] row = {0};
-        int[] col = {0};
-        if (!nextEmpty(row, col, S)) {
+        int position = nextEmpty(S);
+        if (100 == position) {
             return true;
         }
+        int row = position / 9;
+        int col = position % 9;
 
-        for (int num = 1; num <= 9; num++) {
-            if (isValid(num, row[0], col[0], S)) {
-                S[row[0]][col[0]] = num;
+        for (int num = 1; num < 10; num++) {
+            if (isValid(num, row, col, S)) {
+                S[row][col] = num;
+                //Log.d(TAG, row[0] + " " + col[0] + ": " + num);
                 if (solved(S)) {
                     // TODO save solution, and continue
-                    if (countSolution < 1000) {
+                    if (countSolution < 2) {
                         addSolutions(S);
-                        S[row[0]][col[0]] = 0;
+                        S[row][col] = 0;
                     } else {
                         return true;
                     }
                 } else {
-                    S[row[0]][col[0]] = 0;
+                    S[row][col] = 0;
                 }
             }
         }

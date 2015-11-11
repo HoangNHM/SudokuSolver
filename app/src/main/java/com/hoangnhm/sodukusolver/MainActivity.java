@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "S_DEBUG";
     private TextView mTextView;
     private TextView mTvMsg;
     private int mCurrentCell;
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener viewMoreListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Log.d(TAG, "before\ntotal: " + mSolver.countSolution + " ,current: " + mCurrentSolution);
+            Log.d(TAG, "previous: " + btnPrevious.getVisibility() + " ,next: " + btnNext.getVisibility());
             switch (v.getId()) {
                 case R.id.btnPrevious:
                     if (mCurrentSolution > 0) {
@@ -76,17 +80,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case R.id.btnNext:
-                    if (mCurrentSolution < mSolver.countSolution) {
+                    if (mCurrentSolution < mSolver.countSolution - 1) {
                         mCurrentSolution += 1;
                         btnPrevious.setEnabled(true);
                     }
-                    if (mCurrentSolution == mSolver.countSolution) {
+                    if (mCurrentSolution == mSolver.countSolution - 1) {
                         btnNext.setEnabled(false);
                     }
                     break;
                 default:
                     break;
             }
+            Log.d(TAG, "after\ntotal: " + mSolver.countSolution + " ,current: " + mCurrentSolution);
+            Log.d(TAG, "previous: " + btnPrevious.getVisibility() + " ,next: " + btnNext.getVisibility());
             mRiddle = mSolver.getSolutions().get(mCurrentSolution);
             mAdapter.setSudoku(mRiddle);
             mTvMsg.setText(String.format("Solution: %d", mCurrentSolution + 1));
@@ -422,7 +428,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Nullable... params) {
-            mSolver.solved(mRiddle);
+            int[][] newSolution = new int[9][9];
+            //System.arraycopy(solution, 0, newSolution, 0, newSolution.length);
+            for (int i = 0; i < 9; i++) {
+                System.arraycopy(mRiddle[i], 0, newSolution[i], 0, 9);
+            }
+            mSolver.solved(newSolution);
             return 0 != mSolver.countSolution;
         }
 
