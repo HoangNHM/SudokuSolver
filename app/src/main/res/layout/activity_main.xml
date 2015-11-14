@@ -63,10 +63,9 @@
                 android:text="6" />
 
             <Button
-                android:id="@+id/btnSolve"
-                android:text="@string/solve"
-                android:textColor="#0000CC"
-                android:onClick="Solve"/>
+                android:id="@+id/btnNew"
+                android:text="@string/clear"
+                android:onClick="Clear"/>
 
             <Button
                 android:id="@+id/btn7"
@@ -81,8 +80,10 @@
                 android:text="9" />
 
             <Button
-                android:text="@string/clear"
-                android:onClick="Clear"/>
+                android:id="@+id/btnSolve"
+                android:text="@string/solve"
+                android:textColor="#0000CC"
+                android:onClick="Solve"/>
 
             <Button
                 android:id="@+id/btnPrevious"

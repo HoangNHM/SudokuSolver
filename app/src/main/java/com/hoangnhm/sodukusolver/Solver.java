@@ -1,8 +1,7 @@
 package com.hoangnhm.sodukusolver;
 
-import android.util.Log;
-
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by vantuegia on 11/7/2015.
@@ -11,8 +10,21 @@ import java.util.ArrayList;
 public class Solver {
 
     private static final String TAG = "S_DEBUG";
+    private boolean isSolving;
     private ArrayList<int[][]> solutions = new ArrayList<>();
     int countSolution = 0;
+
+    public Solver() {
+        isSolving = false;
+    }
+
+    public void setIsSolving(boolean isSolving) {
+        this.isSolving = isSolving;
+    }
+
+    public boolean isSolving() {
+        return isSolving;
+    }
 
     public ArrayList<int[][]> getSolutions() {
         return solutions;
@@ -85,7 +97,7 @@ public class Solver {
         return 100;
     }
 
-    public boolean solved(int[][] S) {
+    private boolean solved(int[][] S) {
         int position = nextEmpty(S);
         if (100 == position) {
             return true;
@@ -94,12 +106,15 @@ public class Solver {
         int col = position % 9;
 
         for (int num = 1; num < 10; num++) {
+            if (!isSolving()) {
+                return false;
+            }
             if (isValid(num, row, col, S)) {
                 S[row][col] = num;
                 //Log.d(TAG, row[0] + " " + col[0] + ": " + num);
                 if (solved(S)) {
                     // TODO save solution, and continue
-                    if (countSolution < 2) {
+                    if (countSolution < 1000) {
                         addSolutions(S);
                         S[row][col] = 0;
                     } else {
@@ -111,5 +126,60 @@ public class Solver {
             }
         }
         return false;
+    }
+
+    private int detect(int[][] S) {
+        int count = 0;
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (0 != S[i][j]) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private void addMore(int[][] S, int count) {
+        while (count < 15) {
+            int value = new Random().nextInt(9) + 1;
+            int r = new Random().nextInt(9);
+            int c = new Random().nextInt(9);
+            if (isValid(value, r, c, S)) {
+                S[r][c] = value;
+                count++;
+            }
+        }
+    }
+
+    public boolean goSolve(int[][] S) {
+        int count = detect(S);
+        if (count < 10) {
+            addMore(S, count);
+        }
+        return solved(S);
+    }
+
+    public boolean goCheck(int[][] S) {
+        boolean isOk = true;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                int temp = S[i][j];
+                S[i][j] = 0;
+                if (!isValid(temp, i, j, S)) {
+                    isOk = false;
+                    S[i][j] = temp;
+                    break;
+                } else {
+                    S[i][j] = temp;
+                }
+            }
+            if (!isOk) {
+                break;
+            }
+        }
+        return isOk;
     }
 }
