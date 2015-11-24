@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class SudokuAdapter extends BaseAdapter {
 
-    private static final String TAG = "S_DEBUG";
+//    private static final String TAG = "S_DEBUG";
     public ArrayList<View> SView = new ArrayList<View>(81);
     private Context mContext;
     private int[][] sudoku;

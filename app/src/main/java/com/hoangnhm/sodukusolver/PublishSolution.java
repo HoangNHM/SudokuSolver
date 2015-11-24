@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;

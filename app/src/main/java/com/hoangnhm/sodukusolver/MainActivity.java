@@ -2,13 +2,14 @@ package com.hoangnhm.sodukusolver;
 
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +23,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "S_DEBUG";
+//    private static final String TAG = "S_DEBUG";
     private static final long TIMEOUT = 3000;
+    private static final long TIMEOUT_PLUS = 2000;
     private TextView mTextView;
     private TextView mTvMsg;
     private int mCurrentCell;
@@ -79,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener viewMoreListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.d(TAG, "before\ntotal: " + mSolver.countSolution + " ,current: " + mCurrentSolution);
-            Log.d(TAG, "previous: " + btnPrevious.getVisibility() + " ,next: " + btnNext.getVisibility());
+//            Log.d(TAG, "before\ntotal: " + mSolver.countSolution + " ,current: " + mCurrentSolution);
+//            Log.d(TAG, "previous: " + btnPrevious.getVisibility() + " ,next: " + btnNext.getVisibility());
             switch (v.getId()) {
                 case R.id.btnPrevious:
                     if (mCurrentSolution > 0) {
@@ -103,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     break;
             }
-            Log.d(TAG, "after\ntotal: " + mSolver.countSolution + " ,current: " + mCurrentSolution);
-            Log.d(TAG, "previous: " + btnPrevious.getVisibility() + " ,next: " + btnNext.getVisibility());
+//            Log.d(TAG, "after\ntotal: " + mSolver.countSolution + " ,current: " + mCurrentSolution);
+//            Log.d(TAG, "previous: " + btnPrevious.getVisibility() + " ,next: " + btnNext.getVisibility());
             mRiddle = mSolver.getSolutions().get(mCurrentSolution);
             mAdapter.setSudoku(mRiddle);
             mTvMsg.setText(String.format("Solution: %d", mCurrentSolution + 1));
@@ -225,6 +227,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (null != actionBar) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(0xFFFF8C00));
+        }
+
         btn0 = (Button) findViewById(R.id.btn0);
         btn1 = (Button) findViewById(R.id.btn1);
         btn2 = (Button) findViewById(R.id.btn2);
@@ -292,60 +299,44 @@ public class MainActivity extends AppCompatActivity {
 
     public void Solve(View view) {
 
-        boolean isFull = true;
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (0 == mRiddle[i][j]) {
-                    isFull = false;
-                    break;
-                }
-            }
-            if (!isFull) {
-                break;
-            }
-        }
-        if (isFull) {
-            boolean isOk = true;
+        boolean isOk = mSolver.checkInput(mRiddle); // ok: empty or solved
+        if (!isOk) {
+            // 1. Instantiate an AlertDialog.Builder with its constructor
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            // 2. Chain together various setter methods to set the dialog characteristics
+            builder.setMessage("Please check the input and try again.")
+                    .setTitle("\u26A0 Wrong input");
+
+            // 3. Get the AlertDialog from create()
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            // input ok
+            boolean isFull = true;
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
-                    int temp = mRiddle[i][j];
-                    mRiddle[i][j] = 0;
-                    if (!mSolver.isValid(temp, i, j, mRiddle)) {
-                        isOk = false;
-                        mRiddle[i][j] = temp;
+                    if (0 == mRiddle[i][j]) {
+                        isFull = false;
                         break;
-                    } else {
-                        mRiddle[i][j] = temp;
                     }
                 }
-                if (!isOk) {
+                if (!isFull) {
                     break;
                 }
             }
-            if (!isOk) {
-                // 1. Instantiate an AlertDialog.Builder with its constructor
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-                // 2. Chain together various setter methods to set the dialog characteristics
-                builder.setMessage("Please check the input and try again.")
-                        .setTitle("\u26A0 Wrong input");
-
-                // 3. Get the AlertDialog from create()
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            } else {
+            if (isFull) {
                 Toast.makeText(this, "This Sudoku is OK", Toast.LENGTH_SHORT).show();
+            } else {
+                startSolve();
             }
-        } else {
-            startSolve();
         }
-
     }
 
     private void startSolve() {
-        Log.i(TAG, "startSolve");
+//        Log.i(TAG, "startSolve");
         if (null == mSolveTask) {
-            Log.i(TAG, "null == mSolveTask");
+//            Log.i(TAG, "null == mSolveTask");
             mSolveTask = new SolveTask();
         }
         btnSolve.setEnabled(false);
@@ -357,18 +348,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clearHandler() {
-        Log.i(TAG, "clearHandler");
+//        Log.i(TAG, "clearHandler");
         if (null != mSolveHandler) {
-            Log.i(TAG, "null != mSolveHandler");
+//            Log.i(TAG, "null != mSolveHandler");
             mSolveHandler.removeCallbacks(mSolveCallback);
             mSolveHandler = null;
         }
     }
 
     private void stopSolve() {
-        Log.i(TAG, "stopSolve");
+//        Log.i(TAG, "stopSolve");
         if (mSolver.isSolving()) {
-            Log.i(TAG, "mSolver.isSolving()");
+//            Log.i(TAG, "mSolver.isSolving()");
             // User clicked OK button
             mSolver.setIsSolving(false);
 //            mSolveTask.cancel(true);
@@ -499,8 +490,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_share) {
             PublishSolution.publish(this, sudokuGrid);
+            return true;
+        } else if (id == R.id.action_about) {
+            showAbout();
             return true;
         }
 
@@ -510,23 +504,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Log.i(TAG, "onBackPressed");
+//        Log.i(TAG, "onBackPressed");
         finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause");
+//        Log.i(TAG, "onPause");
         stopSolve();
         clearHandler();
+    }
+
+    private void showAbout() {
+        // Inflate the about message contents
+        View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+//        builder.setIcon(R.drawable.fox);
+        builder.setTitle(R.string.about_title);
+        builder.setView(messageView);
+        builder.create();
+        builder.show();
     }
 
     private class SolveTask extends AsyncTask<Nullable, Nullable, Boolean> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Log.i(TAG, "onPreExecute");
+//            Log.i(TAG, "onPreExecute");
             Toast.makeText(MainActivity.this, "Start solving", Toast.LENGTH_SHORT).show();
             mSolver.countSolution = 0;
             multiMode(false); // disable multi mode view
@@ -536,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Nullable... params) {
-            Log.i(TAG, "doInBackground");
+//            Log.i(TAG, "doInBackground");
             int[][] newSolution = new int[9][9];
             for (int i = 0; i < 9; i++) {
                 System.arraycopy(mRiddle[i], 0, newSolution[i], 0, 9);
@@ -548,33 +554,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            Log.i(TAG, "onCancelled");
-//            btnSolve.setEnabled(true);
-//            mSolver.setIsSolving(false);
-//            clearHandler();
-//            mSolveTask = null;
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
-            Log.i(TAG, "onPostExecute");
-            if (true == mReSolve) {
-                mTimeOut += 1000;
+//            Log.i(TAG, "onPostExecute");
+            if (mReSolve) {
+                mTimeOut += TIMEOUT_PLUS;
                 mReSolve = false;
-                Log.i(TAG, "true == mReSolve");
+//                Log.i(TAG, "true == mReSolve");
                 mSolveTask = null;
+                mSolver.setIsTrick(true);
                 clearHandler();
                 startSolve();
             } else {
+                mSolver.setIsTrick(false);
                 mTimeOut = TIMEOUT;
                 if (aBoolean) {
                     mRiddle = mSolver.getSolutions().get(0);
                     mAdapter.setSudoku(mRiddle);
                     mAdapter.notifyDataSetChanged();
-                    setBtnState();
-
-//                Toast.makeText(MainActivity.this, "Done. Solutions found: " + mSolver.countSolution, Toast.LENGTH_SHORT).show();
 
                     if (mSolver.countSolution > 1) {
                         multiMode(true); // enable multi mode view
@@ -594,8 +594,10 @@ public class MainActivity extends AppCompatActivity {
                         // 3. Get the AlertDialog from create()
                         AlertDialog dialog = builder.create();
                         dialog.show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_SHORT).show();
                     }
-                } else if (0 == mSolver.countSolution) {
+                } else {
                     // 1. Instantiate an AlertDialog.Builder with its constructor
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
@@ -607,11 +609,12 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
-                if (mSolver.goCheck(mRiddle)) {
-                    Toast.makeText(MainActivity.this, "good job", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "not good", Toast.LENGTH_LONG).show();
-                }
+//                if (mSolver.checkResult(mRiddle)) {
+//                    Toast.makeText(MainActivity.this, "good job", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(MainActivity.this, "not good", Toast.LENGTH_LONG).show();
+//                }
+                setBtnState();
                 mSolver.setIsSolving(false);
                 btnSolve.setEnabled(true);
                 clearHandler();

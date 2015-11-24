@@ -9,10 +9,21 @@ import java.util.Random;
 
 public class Solver {
 
-    private static final String TAG = "S_DEBUG";
+//    private static final String TAG = "S_DEBUG";
+    private static final int TRICK_COUNT = 12;
+    private static final int TRICK_FROM = 10;
     private boolean isSolving;
     private ArrayList<int[][]> solutions = new ArrayList<>();
     int countSolution = 0;
+    private boolean isTrick = false;
+
+    public boolean isTrick() {
+        return isTrick;
+    }
+
+    public void setIsTrick(boolean isTrick) {
+        this.isTrick = isTrick;
+    }
 
     public Solver() {
         isSolving = false;
@@ -143,7 +154,7 @@ public class Solver {
     }
 
     private void addMore(int[][] S, int count) {
-        while (count < 15) {
+        while (count < TRICK_COUNT) {
             int value = new Random().nextInt(9) + 1;
             int r = new Random().nextInt(9);
             int c = new Random().nextInt(9);
@@ -155,18 +166,44 @@ public class Solver {
     }
 
     public boolean goSolve(int[][] S) {
-        int count = detect(S);
-        if (count < 10) {
-            addMore(S, count);
+        if (isTrick) {
+            int count = detect(S);
+            if (count < TRICK_FROM) {
+                addMore(S, count);
+            }
         }
         return solved(S);
     }
 
-    public boolean goCheck(int[][] S) {
+    public boolean checkResult(int[][] S) {
         boolean isOk = true;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 int temp = S[i][j];
+                S[i][j] = 0;
+                if (!isValid(temp, i, j, S)) {
+                    isOk = false;
+                    S[i][j] = temp;
+                    break;
+                } else {
+                    S[i][j] = temp;
+                }
+            }
+            if (!isOk) {
+                break;
+            }
+        }
+        return isOk;
+    }
+
+    public boolean checkInput(int[][] S) {
+        boolean isOk = true;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                int temp = S[i][j];
+                if (0 == temp) {
+                    continue;
+                }
                 S[i][j] = 0;
                 if (!isValid(temp, i, j, S)) {
                     isOk = false;

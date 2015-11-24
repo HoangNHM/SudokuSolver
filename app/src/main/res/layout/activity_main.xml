@@ -82,7 +82,7 @@
             <Button
                 android:id="@+id/btnSolve"
                 android:text="@string/solve"
-                android:textColor="#0000CC"
+                android:textColor="@color/color_btn_sol"
                 android:onClick="Solve"/>
 
             <Button
